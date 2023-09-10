@@ -2,17 +2,25 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Movie;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MoviesController extends AbstractController
 {
+    private $em;
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
+
     #[Route('/movies', name: 'app_movies')]
     public function index(): Response
     {
-        return $this->render('movies/index.html.twig', [
-            'controller_name' => 'MoviesController',
-        ]);
+        $repositoy = $this->em->getRepository(Movie::class);
+        $movies = $repositoy->findAll();
+        return $this->render('movies/index.html.twig', ['movies' => $movies]);
     }
 }
